@@ -1,0 +1,19 @@
+name: AI Pipeline
+on: [pull_request, workflow_dispatch]
+jobs:
+  ai:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build AI image
+        run: docker compose build
+      - name: Detect stacks
+        run: docker compose run --rm ai python3 ai_cli.py detect
+      - name: Tests
+        run: docker compose run --rm ai python3 ai_cli.py run --task test
+      - name: Lint
+        run: docker compose run --rm ai python3 ai_cli.py run --task lint
+      - name: Mutation (best-effort)
+        run: docker compose run --rm ai bash -lc "python3 ai_cli.py run --task mutation || true"
+      - name: List reports
+        run: docker compose run --rm ai python3 ai_cli.py reports

@@ -1,0 +1,14 @@
+services:
+  ai:
+    build: .
+    # garante que nenhum ENTRYPOINT da imagem atrapalhe comandos diretos
+    entrypoint: []
+    volumes:
+      - ./:/workspace
+      - npm:/root/.npm
+      - pip:/root/.cache/pip
+    working_dir: /workspace
+    tty: true
+volumes:
+  npm: {}
+  pip: {}

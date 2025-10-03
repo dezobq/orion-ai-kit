@@ -1,0 +1,12 @@
+{
+  "enabledMcpjsonServers": [
+    "github",
+    "filesystem",
+    "http"
+  ],
+  "outputStyle": "pull-request",
+  "hooks": {
+    "pre-pr": "./scripts/ai_pre_pr.sh",
+    "post-pr": "./scripts/ai_post_pr.sh"
+  }
+}

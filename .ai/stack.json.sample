@@ -1,0 +1,17 @@
+{
+  "adapters": [
+    {
+      "path": ".",
+      "stack": "node"
+    },
+    {
+      "path": ".",
+      "stack": "python"
+    }
+  ],
+  "policies": {
+    "mutation_min": 0.6,
+    "coverage_floor": 0.8,
+    "allow_snapshots": false
+  }
+}
