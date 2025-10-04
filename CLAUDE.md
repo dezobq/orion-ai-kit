@@ -96,7 +96,7 @@ Each adapter provides: build, test, lint, format, coverage, and mutation tasks.
 
 ## CI/CD Pipeline
 
-GitHub Actions workflow ([.github/workflows/ai.yml:1-46](.github/workflows/ai.yml#L1-L46)) runs on PR and workflow_dispatch:
+GitHub Actions workflow ([.github/workflows/ai.yml:1-125](.github/workflows/ai.yml#L1-L125)) runs on PR and workflow_dispatch:
 
 1. **Build Docker image** - Builds container with all tooling
 2. **Detect stacks** - Auto-detects Node.js/Python projects
@@ -104,9 +104,15 @@ GitHub Actions workflow ([.github/workflows/ai.yml:1-46](.github/workflows/ai.ym
 4. **Run lint** - Code quality checks (ESLint/Ruff)
 5. **Run coverage** - Code coverage analysis (Cobertura/LCOV)
 6. **Run mutation testing** - Stryker mutation tests (best-effort with `|| true`)
-7. **Generate summary** - Creates GitHub Step Summary with metrics
-8. **Upload artifacts** - Publishes reports (retention: 30 days)
-9. **List reports** - Final inventory of all generated reports
+7. **Quality gates** - Enforces coverage ≥80%, mutation ≥60%
+8. **Generate summary** - Creates GitHub Step Summary + reports/summary.md
+9. **Upload artifacts** - Publishes reports (retention: 30 days)
+10. **Upload to Codecov** - Coverage trends and PR comments
+11. **Setup Java** - Java 17 for SonarCloud
+12. **SonarCloud Scan** - Code quality, security, tech debt analysis
+13. **PR comment (sticky)** - Posts summary to PR (updates on new commits)
+14. **Slack notification** - Alerts on pipeline failure (optional)
+15. **List reports** - Final inventory of all generated reports
 
 ### CI Hooks
 
@@ -122,9 +128,24 @@ python ai_cli.py run --task mutation || true
 python ai_cli.py reports  # Lists all reports
 ```
 
+### PR Comments & Notifications
+
+**Sticky PR Comments** ([.github/workflows/ai.yml:74-79](.github/workflows/ai.yml#L74-L79)):
+- Automatically posts pipeline summary to PRs
+- Updates on new commits (doesn't spam with new comments)
+- Includes test results, coverage, mutation score
+- Saved to `reports/summary.md`
+
+**Slack Notifications** ([.github/workflows/ai.yml:81-120](.github/workflows/ai.yml#L81-L120)):
+- Triggers only on pipeline failure
+- Rich message format with repo, branch, commit info
+- Buttons to view workflow and artifacts
+- **Setup**: Add `SLACK_WEBHOOK_URL` to GitHub Secrets
+- Get webhook from: Slack → Apps → Incoming Webhooks
+
 ### GitHub Step Summary
 
-The pipeline generates a comprehensive summary ([scripts/generate_summary.py:1-201](scripts/generate_summary.py#L1-L201)):
+The pipeline generates a comprehensive summary ([scripts/generate_summary.py:1-244](scripts/generate_summary.py#L1-L244)):
 
 - **Unit Tests**: Pass/fail status, duration, error counts
 - **Code Coverage**: Line and branch coverage percentages
@@ -161,6 +182,7 @@ All artifacts are uploaded with 30-day retention:
 - `reports/lcov.info` - Coverage report (LCOV format)
 - `reports/mutation/mutation.html` - Interactive mutation report
 - `reports/mutation/mutation.json` - Mutation data (machine-readable)
+- `reports/summary.md` - Pipeline summary (for PR comments)
 
 ### Enforcing Quality Gates
 
@@ -263,7 +285,7 @@ Coverage reports are automatically uploaded to Codecov after each PR:
 
 ### SonarCloud Integration
 
-**✅ ACTIVE**: Code quality analysis via SonarCloud ([.github/workflows/ai.yml:60-72](.github/workflows/ai.yml#L60-L72))
+**✅ ACTIVE**: Code quality analysis via SonarCloud ([.github/workflows/ai.yml:67-72](.github/workflows/ai.yml#L67-L72))
 
 SonarCloud automatically scans code quality, security, and maintainability after each PR:
 ```yaml
@@ -318,6 +340,19 @@ SonarCloud automatically scans code quality, security, and maintainability after
 [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=YOUR_ORG_YOUR_REPO&metric=bugs)](https://sonarcloud.io/summary/new_code?id=YOUR_ORG_YOUR_REPO)
 ```
 
+### Required Secrets
+
+Add these to GitHub → Settings → Secrets → Actions:
+
+1. **SONAR_TOKEN** (required for SonarCloud)
+   - Get from: https://sonarcloud.io → Account → Security → Generate Token
+
+2. **CODECOV_TOKEN** (optional, only for private repos)
+   - Get from: https://codecov.io → Repository settings
+
+3. **SLACK_WEBHOOK_URL** (optional, for failure notifications)
+   - Get from: Slack → Apps → Incoming Webhooks → Add to Slack
+
 ## Memory Tool (Optional)
 
 Claude Memory Tool integration via `memory/memory_tool.py`:
@@ -368,6 +403,7 @@ All test and coverage reports are generated in the `reports/` directory:
 - **JUnit XML**: `reports/junit.xml` or `junit.xml` (root)
 - **Coverage**: `reports/coverage.xml`, `reports/cobertura-coverage.xml`
 - **Mutation**: `reports/mutation/mutation.html` (interactive report), `reports/mutation/mutation.json`
+- **Summary**: `reports/summary.md` (for PR comments)
 
 ## Next Steps: RAG + OpenSearch Integration
 
