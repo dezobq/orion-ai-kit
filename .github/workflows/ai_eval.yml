@@ -1,0 +1,44 @@
+name: AI Nightly Eval
+on:
+  schedule:
+    - cron: "0 3 * * *"  # 03:00 UTC daily
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start OpenSearch
+        run: docker compose -f docker-compose.rag.yml up -d opensearch
+
+      - name: Wait for OpenSearch to be ready
+        run: |
+          echo "Waiting for OpenSearch to start..."
+          sleep 30
+
+      - name: RAG eval (Recall@K / MRR)
+        run: |
+          docker compose run --rm --entrypoint "" ai bash -lc \
+            "python3 scripts/eval_rag.py --q ./docs/qs.jsonl --gold ./docs/gold.jsonl --k 50 --out reports/rag_eval.json"
+
+      - name: Display results
+        if: always()
+        run: |
+          if [ -f reports/rag_eval.json ]; then
+            echo "RAG Evaluation Results:"
+            cat reports/rag_eval.json | python3 -m json.tool
+          fi
+
+      - name: Upload evaluation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rag-eval
+          path: reports/rag_eval.json
+          retention-days: 30
+
+      - name: Shutdown services
+        if: always()
+        run: docker compose -f docker-compose.rag.yml down

@@ -1,0 +1,5 @@
+{"id": "q1", "relevant_docs": ["package.json:1", "CLAUDE.md:50", "README.md:30"]}
+{"id": "q2", "relevant_docs": ["stryker.conf.json:1", "CLAUDE.md:180", "package.json:20"]}
+{"id": "q3", "relevant_docs": [".github/workflows/ai.yml:1", "CLAUDE.md:99", "README.md:80"]}
+{"id": "q4", "relevant_docs": ["docker-compose.rag.yml:1", "scripts/ingest_to_opensearch.py:1", "docs/rag_queries.md:1"]}
+{"id": "q5", "relevant_docs": ["scripts/check_thresholds.py:1", "CLAUDE.md:182", ".github/workflows/ai.yml:50"]}

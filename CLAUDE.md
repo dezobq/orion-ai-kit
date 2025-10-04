@@ -353,6 +353,77 @@ Add these to GitHub → Settings → Secrets → Actions:
 3. **SLACK_WEBHOOK_URL** (optional, for failure notifications)
    - Get from: Slack → Apps → Incoming Webhooks → Add to Slack
 
+## RAG Evaluation (Nightly Job)
+
+**✅ ACTIVE**: Automated RAG evaluation runs nightly at 03:00 UTC ([.github/workflows/ai_eval.yml](.github/workflows/ai_eval.yml))
+
+### Metrics
+
+The evaluation measures retrieval quality using:
+
+1. **Recall@K**: Percentage of relevant documents retrieved in top K results
+2. **MRR (Mean Reciprocal Rank)**: Average rank position of first relevant result
+
+### Retrieval Strategies
+
+The evaluation script ([scripts/eval_rag.py](scripts/eval_rag.py)) supports three strategies:
+
+1. **BM25**: Keyword-based search (default)
+2. **Vector**: Semantic search with embeddings (requires implementation)
+3. **Hybrid**: BM25 + Vector with score fusion
+
+### Test Data Format
+
+**Queries** ([docs/qs.jsonl](docs/qs.jsonl)):
+```jsonl
+{"id": "q1", "query": "How to run tests in this project?"}
+{"id": "q2", "query": "What is the mutation testing configuration?"}
+```
+
+**Gold Standard** ([docs/gold.jsonl](docs/gold.jsonl)):
+```jsonl
+{"id": "q1", "relevant_docs": ["package.json:1", "CLAUDE.md:50", "README.md:30"]}
+{"id": "q2", "relevant_docs": ["stryker.conf.json:1", "CLAUDE.md:180"]}
+```
+
+### Running Evaluation
+
+**Manual run**:
+```bash
+python scripts/eval_rag.py \
+  --q docs/qs.jsonl \
+  --gold docs/gold.jsonl \
+  --k 50 \
+  --strategy bm25 \
+  --out reports/rag_eval.json
+```
+
+**Via Docker**:
+```bash
+docker compose -f docker-compose.rag.yml up -d opensearch
+docker compose run --rm --entrypoint "" ai bash -lc \
+  "python3 scripts/eval_rag.py --q ./docs/qs.jsonl --gold ./docs/gold.jsonl --k 50 --out reports/rag_eval.json"
+```
+
+**Manual trigger workflow**:
+- Go to Actions → AI Nightly Eval → Run workflow
+
+### Results
+
+Evaluation results are saved to `reports/rag_eval.json`:
+```json
+{
+  "strategy": "bm25",
+  "k": 50,
+  "num_queries": 5,
+  "avg_recall@k": 0.6333,
+  "avg_mrr": 0.4500,
+  "per_query": [...]
+}
+```
+
+Artifacts are uploaded with 30-day retention for historical analysis.
+
 ## Memory Tool (Optional)
 
 Claude Memory Tool integration via `memory/memory_tool.py`:
