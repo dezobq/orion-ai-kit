@@ -1,14 +1,28 @@
-version: "3.9"
 services:
   opensearch:
     image: opensearchproject/opensearch:2.15.0
+    ports:
+      - "9200:9200"
     environment:
       - discovery.type=single-node
-      - plugins.security.disabled=true
-      - bootstrap.memory_lock=true
       - OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m
+      - OPENSEARCH_INITIAL_ADMIN_PASSWORD=${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
     ulimits:
       memlock: {soft: -1, hard: -1}
-    ports: ["9200:9200"]
     volumes: ["osdata:/usr/share/opensearch/data"]
+  ingest:
+    image: python:3.11-slim
+    working_dir: /work
+    volumes:
+      - ./:/work
+    environment:
+      OS_URL: https://opensearch:9200
+      OS_USERNAME: admin
+      OS_PASSWORD: ${OPENSEARCH_INITIAL_ADMIN_PASSWORD}
+      OS_VERIFY: "false"
+      OS_INDEX: docs
+    command: >
+      bash -lc "pip install requests && python3 scripts/ingest_to_opensearch.py docs"
+    depends_on:
+      - opensearch
 volumes: { osdata: {} }

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/stryker-mutator/stryker-js/master/packages/api/schema/stryker-schema.json",
+  "testRunner": "jest",
+  "jest": {
+    "projectType": "custom",
+    "configFile": "jest.config.js",
+    "enableFindRelatedTests": false
+  },
+  "mutate": [
+    "**/*.js",
+    "!**/*.{test,spec}.js",
+    "!node_modules/**",
+    "!coverage/**",
+    "!reports/**",
+    "!.stryker-tmp/**"
+  ],
+  "coverageAnalysis": "off",
+  "reporters": ["progress", "clear-text", "html", "json"],
+  "timeoutMS": 60000
+}

@@ -1,8 +1,7 @@
 services:
   ai:
+    platform: "linux/amd64"
     build: .
-    # garante que nenhum ENTRYPOINT da imagem atrapalhe comandos diretos
-    entrypoint: []
     volumes:
       - ./:/workspace
       - npm:/root/.npm
