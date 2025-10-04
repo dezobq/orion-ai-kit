@@ -117,9 +117,12 @@ def main():
         lang = detect_lang(fp)
         sha_blob = file_blob_sha(fp)
         for (start, end, content) in chunks:
+            path_str = str(fp.relative_to(ROOT)).replace("\\","/")
+            doc_id = f"{path_str}:{start}"
             doc = {
+                "doc_id": doc_id,
                 "repo_sha": sha_repo,
-                "path": str(fp.relative_to(ROOT)).replace("\\","/"),
+                "path": path_str,
                 "lang": lang,
                 "symbol": None,  # placeholder: podemos enriquecer depois (ctags/tree-sitter)
                 "start_line": start,

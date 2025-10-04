@@ -18,17 +18,50 @@ jobs:
           echo "Waiting for OpenSearch to start..."
           sleep 30
 
+      - name: Ingest code into OpenSearch
+        run: |
+          docker compose run --rm --entrypoint "" \
+            -e OS_URL=https://opensearch:9200 \
+            -e OS_USER=admin \
+            -e OS_PASS=MyS3curePassw0rd!2025 \
+            -e OS_INDEX=code-chunks \
+            -e OS_VERIFY=false \
+            ai bash -lc \
+            "python3 scripts/ingest_to_opensearch.py \
+              --dir . \
+              --pattern '**/*.{js,ts,py,md}' \
+              --exclude 'node_modules,dist,reports,.git'"
+
       - name: RAG eval (Recall@K / MRR)
         run: |
-          docker compose run --rm --entrypoint "" ai bash -lc \
+          docker compose run --rm --entrypoint "" \
+            -e OS_URL=https://opensearch:9200 \
+            ai bash -lc \
             "python3 scripts/eval_rag.py --q ./docs/qs.jsonl --gold ./docs/gold.jsonl --k 50 --out reports/rag_eval.json"
 
       - name: Display results
         if: always()
         run: |
           if [ -f reports/rag_eval.json ]; then
-            echo "RAG Evaluation Results:"
-            cat reports/rag_eval.json | python3 -m json.tool
+            echo "📊 RAG Evaluation Results" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            python3 - << 'PY' >> $GITHUB_STEP_SUMMARY
+          import json
+          with open("reports/rag_eval.json") as f:
+              data = json.load(f)
+          print(f"**Strategy**: {data['strategy']}")
+          print(f"**K**: {data['k']}")
+          print(f"**Queries**: {data['num_queries']}")
+          print(f"**Avg Recall@{data['k']}**: {data['avg_recall@k']:.1%}")
+          print(f"**Avg MRR**: {data['avg_mrr']:.4f}")
+          print("")
+          print("### Per-Query Results")
+          print("")
+          print("| Query ID | Recall@K | MRR | Retrieved | Gold |")
+          print("|----------|----------|-----|-----------|------|")
+          for q in data['per_query']:
+              print(f"| {q['query_id']} | {q['recall@k']:.1%} | {q['mrr']:.4f} | {q['retrieved_count']} | {q['gold_count']} |")
+          PY
           fi
 
       - name: Upload evaluation results
