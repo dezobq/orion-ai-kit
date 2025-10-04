@@ -261,6 +261,63 @@ Coverage reports are automatically uploaded to Codecov after each PR:
 [![codecov](https://codecov.io/gh/YOUR_USERNAME/orion-ai-kit/branch/main/graph/badge.svg)](https://codecov.io/gh/YOUR_USERNAME/orion-ai-kit)
 ```
 
+### SonarCloud Integration
+
+**✅ ACTIVE**: Code quality analysis via SonarCloud ([.github/workflows/ai.yml:60-72](.github/workflows/ai.yml#L60-L72))
+
+SonarCloud automatically scans code quality, security, and maintainability after each PR:
+```yaml
+- name: Setup Java for SonarCloud
+  uses: actions/setup-java@v4
+  with:
+    distribution: temurin
+    java-version: 17
+
+- name: SonarCloud Scan
+  uses: SonarSource/sonarcloud-github-action@v2
+  env:
+    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+```
+
+**Setup (First Time):**
+1. Go to https://sonarcloud.io and login with GitHub
+2. Click "+" → "Analyze new project"
+3. Select your repository
+4. Copy the project key and organization
+5. Update [sonar-project.properties:5-6](sonar-project.properties#L5-L6) with your values
+6. GitHub → Settings → Secrets → Actions → New secret
+7. Name: `SONAR_TOKEN`, Value: `<your-token-from-sonarcloud>`
+
+**Features:**
+- 🐛 **Bug Detection**: Identifies potential bugs and code smells
+- 🔒 **Security Hotspots**: Detects security vulnerabilities
+- 📊 **Code Duplication**: Finds duplicated code blocks
+- 📈 **Technical Debt**: Estimates time to fix issues
+- ✅ **Quality Gate**: Pass/fail based on configured rules
+- 📝 **PR Decoration**: Automatic PR comments with issues
+
+**Configuration** ([sonar-project.properties:1-61](sonar-project.properties#L1-L61)):
+- **Coverage**: Reports from `reports/lcov.info`
+- **Exclusions**: Test files, config files, node_modules, reports
+- **Duplication**: Excludes test files
+- **Languages**: JavaScript, TypeScript, Python
+- **Quality Gate**: Non-blocking (`wait=false`)
+
+**Metrics Tracked:**
+- Bugs, Vulnerabilities, Code Smells
+- Coverage (from LCOV reports)
+- Duplications, Complexity
+- Maintainability Rating (A-E)
+- Reliability Rating (A-E)
+- Security Rating (A-E)
+
+**Add Badges to README:**
+```markdown
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=YOUR_ORG_YOUR_REPO&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=YOUR_ORG_YOUR_REPO)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=YOUR_ORG_YOUR_REPO&metric=coverage)](https://sonarcloud.io/summary/new_code?id=YOUR_ORG_YOUR_REPO)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=YOUR_ORG_YOUR_REPO&metric=bugs)](https://sonarcloud.io/summary/new_code?id=YOUR_ORG_YOUR_REPO)
+```
+
 ## Memory Tool (Optional)
 
 Claude Memory Tool integration via `memory/memory_tool.py`:
