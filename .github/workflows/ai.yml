@@ -24,6 +24,12 @@ jobs:
       - name: Run mutation testing
         run: docker compose run --rm ai python ai_cli.py run --task mutation || true
 
+      - name: Quality gates (coverage & mutation)
+        if: always()
+        run: |
+          docker compose run --rm --entrypoint "" ai bash -lc \
+            "python3 scripts/check_thresholds.py --min-coverage 0.80 --min-mutation 0.60"
+
       - name: Generate summary
         if: always()
         run: |
@@ -39,6 +45,17 @@ jobs:
             junit.xml
             .coverage
           retention-days: 30
+
+      - name: Upload to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: reports/cobertura-coverage.xml,reports/coverage.xml,reports/lcov.info
+          flags: unittests
+          name: codecov-orion-ai-kit
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: List all reports
         if: always()

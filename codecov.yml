@@ -1,0 +1,46 @@
+# Codecov Configuration
+# https://docs.codecov.com/docs/codecov-yaml
+
+coverage:
+  status:
+    project:
+      default:
+        target: 80%
+        threshold: 2%
+        if_ci_failed: error
+
+    patch:
+      default:
+        target: 80%
+        threshold: 2%
+
+  precision: 1
+  round: down
+  range: "70...100"
+
+comment:
+  layout: "header, diff, flags, components, footer"
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+
+flags:
+  unittests:
+    paths:
+      - "src/"
+      - "lib/"
+      - "."
+    carryforward: false
+
+ignore:
+  - "node_modules/"
+  - "dist/"
+  - "build/"
+  - ".stryker-tmp/"
+  - "**/*.test.js"
+  - "**/*.test.ts"
+  - "**/*.spec.js"
+  - "**/*.spec.ts"
+  - "**/*.config.js"
+  - "**/*.config.ts"

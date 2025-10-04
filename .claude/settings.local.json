@@ -10,7 +10,9 @@
       "Bash(curl -k -u admin:MyS3curePassw0rd!2025 -X GET \"https://localhost:9200/code-chunks/_search?pretty&size=2\" -H \"Content-Type: application/json\" -d '{\"\"query\"\":{\"\"match_all\"\":{}}}')",
       "Bash(curl -k -u admin:MyS3curePassw0rd!2025 \"https://localhost:9200/code-chunks/_search?pretty\" -H \"Content-Type: application/json\" -d '{ \"\"query\"\": { \"\"match\"\": { \"\"content\"\": \"\"module.exports\"\" } }, \"\"size\"\": 3, \"\"_source\"\": [\"\"path\"\",\"\"start_line\"\",\"\"end_line\"\",\"\"lang\"\"] }')",
       "Bash(curl -k -u admin:MyS3curePassw0rd!2025 \"https://localhost:9200/code-chunks/_search?pretty\" -H \"Content-Type: application/json\" -d '{ \"\"query\"\": { \"\"match\"\": { \"\"content\"\": \"\"jest\"\" } }, \"\"size\"\": 3, \"\"_source\"\": [\"\"path\"\",\"\"start_line\"\",\"\"end_line\"\",\"\"lang\"\",\"\"content\"\"], \"\"highlight\"\": { \"\"fields\"\": { \"\"content\"\": {} } } }')",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

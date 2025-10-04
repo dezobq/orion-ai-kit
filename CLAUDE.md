@@ -164,24 +164,102 @@ All artifacts are uploaded with 30-day retention:
 
 ### Enforcing Quality Gates
 
-Currently mutation testing runs with `|| true` (non-blocking). To enforce thresholds:
+**✅ ACTIVE**: Quality gates are now enforced via [scripts/check_thresholds.py:1-119](scripts/check_thresholds.py#L1-L119)
 
-**Option 1: Remove `|| true`** (fails on threshold breach)
+The pipeline runs quality gates after mutation testing ([.github/workflows/ai.yml:27-31](.github/workflows/ai.yml#L27-L31)):
 ```yaml
-- name: Run mutation testing
-  run: docker compose run --rm ai python ai_cli.py run --task mutation
+- name: Quality gates (coverage & mutation)
+  if: always()
+  run: |
+    docker compose run --rm --entrypoint "" ai bash -lc \
+      "python3 scripts/check_thresholds.py --min-coverage 0.80 --min-mutation 0.60"
 ```
 
-**Option 2: Custom gate script**
+**Default Thresholds:**
+- **Coverage**: ≥80% line coverage (fails build if below)
+- **Mutation**: ≥60% mutation score (fails build if below)
+
+**Usage:**
 ```bash
-# After mutation run:
-python scripts/check_thresholds.py --min-mutation=60 --min-coverage=80
+# Check with default thresholds (80% coverage, 60% mutation)
+python scripts/check_thresholds.py
+
+# Custom thresholds
+python scripts/check_thresholds.py --min-coverage 0.85 --min-mutation 0.70
+
+# Skip specific checks
+python scripts/check_thresholds.py --skip-coverage  # mutation only
+python scripts/check_thresholds.py --skip-mutation  # coverage only
 ```
 
-Thresholds in [stryker.conf.json:22-26](stryker.conf.json#L22-L26):
+**Example Output:**
+```
+📊 Quality Metrics:
+  Line coverage: 100.0% (min: 80.0%)
+  Mutation score: 100.0% (min: 60.0%)
+
+✅ QUALITY GATES PASSED
+```
+
+**On Failure:**
+```
+📊 Quality Metrics:
+  Line coverage: 75.3% (min: 80.0%)
+  Mutation score: 55.1% (min: 60.0%)
+
+❌ QUALITY GATES FAILED: coverage 75.3% < 80.0%; mutation 55.1% < 60.0%
+
+To fix:
+  - Add more unit tests to increase coverage
+  - Strengthen test assertions to kill more mutants
+  - Cover edge cases and error conditions
+```
+
+**Stryker Thresholds** in [stryker.conf.json:22-26](stryker.conf.json#L22-L26):
 - **High**: 80% (excellent)
 - **Low**: 60% (acceptable)
 - **Break**: 50% (minimum to pass)
+
+### Codecov Integration
+
+**✅ ACTIVE**: Coverage tracking via Codecov ([.github/workflows/ai.yml:49-58](.github/workflows/ai.yml#L49-L58))
+
+Coverage reports are automatically uploaded to Codecov after each PR:
+```yaml
+- name: Upload to Codecov
+  uses: codecov/codecov-action@v4
+  with:
+    files: reports/cobertura-coverage.xml,reports/coverage.xml,reports/lcov.info
+    flags: unittests
+    fail_ci_if_error: false
+```
+
+**Setup (First Time):**
+1. **Public Repos**: No setup needed - Codecov works automatically
+2. **Private Repos**: Add `CODECOV_TOKEN` to GitHub Secrets:
+   - Go to https://codecov.io and login with GitHub
+   - Select your repository
+   - Copy the upload token
+   - GitHub → Settings → Secrets → Actions → New secret
+   - Name: `CODECOV_TOKEN`, Value: `<your-token>`
+
+**Features:**
+- 📊 **Coverage Trends**: Track coverage over time
+- 📈 **PR Comments**: Automatic coverage reports on PRs
+- 🎯 **File-level Coverage**: See coverage per file
+- 🔍 **Diff Coverage**: Coverage on changed lines only
+- 🏆 **Badges**: Add coverage badge to README
+
+**Configuration** ([codecov.yml:1-45](codecov.yml#L1-L45)):
+- Target: 80% project coverage
+- Threshold: ±2% acceptable variance
+- Ignores: node_modules, dist, test files, config files
+- Precision: 1 decimal place
+
+**Add Badge to README:**
+```markdown
+[![codecov](https://codecov.io/gh/YOUR_USERNAME/orion-ai-kit/branch/main/graph/badge.svg)](https://codecov.io/gh/YOUR_USERNAME/orion-ai-kit)
+```
 
 ## Memory Tool (Optional)
 
