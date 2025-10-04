@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose run:*)",
+      "Bash(curl -k -u admin:MyS3curePassw0rd!2025 -X PUT \"https://localhost:9200/code-chunks\" -H \"Content-Type: application/json\" -d '{\n  \"\"settings\"\": {\n    \"\"index\"\": {\n      \"\"number_of_shards\"\": 1,\n      \"\"number_of_replicas\"\": 0,\n      \"\"knn\"\": true\n    }\n  },\n  \"\"mappings\"\": {\n    \"\"properties\"\": {\n      \"\"repo_sha\"\":     { \"\"type\"\": \"\"keyword\"\" },\n      \"\"path\"\":         { \"\"type\"\": \"\"keyword\"\" },\n      \"\"lang\"\":         { \"\"type\"\": \"\"keyword\"\" },\n      \"\"symbol\"\":       { \"\"type\"\": \"\"keyword\"\" },\n      \"\"start_line\"\":   { \"\"type\"\": \"\"integer\"\" },\n      \"\"end_line\"\":     { \"\"type\"\": \"\"integer\"\" },\n      \"\"sha_blob\"\":     { \"\"type\"\": \"\"keyword\"\" },\n      \"\"ingested_at\"\":  { \"\"type\"\": \"\"date\"\"   },\n      \"\"tags\"\":         { \"\"type\"\": \"\"keyword\"\" },\n      \"\"content\"\":      { \"\"type\"\": \"\"text\"\"    },\n      \"\"embedding\"\": {\n        \"\"type\"\": \"\"knn_vector\"\",\n        \"\"dimension\"\": 384,\n        \"\"method\"\": { \"\"name\"\": \"\"hnsw\"\", \"\"space_type\"\": \"\"cosinesimil\"\", \"\"engine\"\": \"\"nmslib\"\" }\n      }\n    }\n  }\n}')",
+      "Bash(curl -k -u admin:MyS3curePassw0rd!2025 -X DELETE \"https://localhost:9200/_index_template/dev-defaults\")",
+      "Bash(curl -k -u admin:MyS3curePassw0rd!2025 -X GET \"https://localhost:9200/code-chunks/_mapping?pretty\")",
+      "Bash(docker compose:*)",
+      "Bash(curl -k -u admin:MyS3curePassw0rd!2025 -X GET \"https://localhost:9200/code-chunks/_count?pretty\")",
+      "Bash(curl -k -u admin:MyS3curePassw0rd!2025 -X GET \"https://localhost:9200/code-chunks/_search?pretty&size=2\" -H \"Content-Type: application/json\" -d '{\"\"query\"\":{\"\"match_all\"\":{}}}')",
+      "Bash(curl -k -u admin:MyS3curePassw0rd!2025 \"https://localhost:9200/code-chunks/_search?pretty\" -H \"Content-Type: application/json\" -d '{ \"\"query\"\": { \"\"match\"\": { \"\"content\"\": \"\"module.exports\"\" } }, \"\"size\"\": 3, \"\"_source\"\": [\"\"path\"\",\"\"start_line\"\",\"\"end_line\"\",\"\"lang\"\"] }')",
+      "Bash(curl -k -u admin:MyS3curePassw0rd!2025 \"https://localhost:9200/code-chunks/_search?pretty\" -H \"Content-Type: application/json\" -d '{ \"\"query\"\": { \"\"match\"\": { \"\"content\"\": \"\"jest\"\" } }, \"\"size\"\": 3, \"\"_source\"\": [\"\"path\"\",\"\"start_line\"\",\"\"end_line\"\",\"\"lang\"\",\"\"content\"\"], \"\"highlight\"\": { \"\"fields\"\": { \"\"content\"\": {} } } }')",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

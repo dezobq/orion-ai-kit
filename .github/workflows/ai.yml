@@ -5,15 +5,41 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Build AI image
         run: docker compose build
+
       - name: Detect stacks
-        run: docker compose run --rm ai python3 ai_cli.py detect
-      - name: Tests
-        run: docker compose run --rm ai python3 ai_cli.py run --task test
-      - name: Lint
-        run: docker compose run --rm ai python3 ai_cli.py run --task lint
-      - name: Mutation (best-effort)
-        run: docker compose run --rm ai bash -lc "python3 ai_cli.py run --task mutation || true"
-      - name: List reports
-        run: docker compose run --rm ai python3 ai_cli.py reports
+        run: docker compose run --rm ai python ai_cli.py detect
+
+      - name: Run tests
+        run: docker compose run --rm ai python ai_cli.py run --task test
+
+      - name: Run lint
+        run: docker compose run --rm ai python ai_cli.py run --task lint
+
+      - name: Run coverage
+        run: docker compose run --rm ai python ai_cli.py run --task coverage
+
+      - name: Run mutation testing
+        run: docker compose run --rm ai python ai_cli.py run --task mutation || true
+
+      - name: Generate summary
+        if: always()
+        run: |
+          docker compose run --rm ai python scripts/generate_summary.py >> $GITHUB_STEP_SUMMARY || true
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            reports/**/*
+            junit.xml
+            .coverage
+          retention-days: 30
+
+      - name: List all reports
+        if: always()
+        run: docker compose run --rm ai python ai_cli.py reports

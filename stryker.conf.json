@@ -1,20 +1,30 @@
 {
-  "$schema": "https://raw.githubusercontent.com/stryker-mutator/stryker-js/master/packages/api/schema/stryker-schema.json",
+  "$schema": "https://stryker-mutator.io/stryker.schema.json",
   "testRunner": "jest",
   "jest": {
     "projectType": "custom",
-    "configFile": "jest.config.js",
-    "enableFindRelatedTests": false
+    "configFile": "jest.config.js"
   },
   "mutate": [
-    "**/*.js",
-    "!**/*.{test,spec}.js",
-    "!node_modules/**",
-    "!coverage/**",
-    "!reports/**",
-    "!.stryker-tmp/**"
+    "src/**/*.js",
+    "src/**/*.ts",
+    "sum.js",
+    "!src/**/*.test.js",
+    "!src/**/*.test.ts",
+    "!src/**/*.spec.js",
+    "!src/**/*.spec.ts",
+    "!**/*.config.js",
+    "!jest.config.js",
+    "!eslint.config.js"
   ],
-  "coverageAnalysis": "off",
   "reporters": ["progress", "clear-text", "html", "json"],
-  "timeoutMS": 60000
+  "tempDirName": ".stryker-tmp",
+  "thresholds": {
+    "high": 80,
+    "low": 60,
+    "break": 50
+  },
+  "coverageAnalysis": "perTest",
+  "timeoutMS": 5000,
+  "timeoutFactor": 1.5
 }
