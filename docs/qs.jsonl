@@ -1,5 +1,5 @@
-{"id": "q1", "query": "How to run tests in this project?"}
-{"id": "q2", "query": "What is the mutation testing configuration?"}
-{"id": "q3", "query": "How does the CI/CD pipeline work?"}
-{"id": "q4", "query": "How to configure OpenSearch for RAG?"}
-{"id": "q5", "query": "What quality gates are enforced?"}
+{"id": "q1", "query": "jest testEnvironment reporters"}
+{"id": "q2", "query": "collectCoverage cobertura lcov"}
+{"id": "q3", "query": "python cli detect stack"}
+{"id": "q4", "query": "python argparse main"}
+{"id": "q5", "query": "module exports jest reporters"}
