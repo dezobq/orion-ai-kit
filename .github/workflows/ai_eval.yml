@@ -20,7 +20,7 @@ jobs:
 
       - name: Ingest code into OpenSearch
         run: |
-          docker compose run --rm --entrypoint "" \
+          docker compose -f docker-compose.rag.yml run --rm --entrypoint "" \
             -e OS_URL=https://opensearch:9200 \
             -e OS_USER=admin \
             -e OS_PASS=MyS3curePassw0rd!2025 \
@@ -34,7 +34,7 @@ jobs:
 
       - name: RAG eval (Recall@K / MRR)
         run: |
-          docker compose run --rm --entrypoint "" \
+          docker compose -f docker-compose.rag.yml run --rm --entrypoint "" \
             -e OS_URL=https://opensearch:9200 \
             ai bash -lc \
             "python3 scripts/eval_rag.py --q ./docs/qs.jsonl --gold ./docs/gold.jsonl --k 50 --out reports/rag_eval.json"
