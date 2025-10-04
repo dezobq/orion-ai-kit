@@ -12,7 +12,17 @@
       "Bash(curl -k -u admin:MyS3curePassw0rd!2025 \"https://localhost:9200/code-chunks/_search?pretty\" -H \"Content-Type: application/json\" -d '{ \"\"query\"\": { \"\"match\"\": { \"\"content\"\": \"\"jest\"\" } }, \"\"size\"\": 3, \"\"_source\"\": [\"\"path\"\",\"\"start_line\"\",\"\"end_line\"\",\"\"lang\"\",\"\"content\"\"], \"\"highlight\"\": { \"\"fields\"\": { \"\"content\"\": {} } } }')",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git rm:*)",
+      "Bash(timeout:*)",
+      "Bash(curl -k -u admin:MyS3curePassw0rd!2025 -X PUT \"https://localhost:9200/code-chunks\" -H \"Content-Type: application/json\" -d \"{\"\"settings\"\":{\"\"index\"\":{\"\"number_of_shards\"\":1,\"\"number_of_replicas\"\":0}},\"\"mappings\"\":{\"\"properties\"\":{\"\"repo\"\":{\"\"type\"\":\"\"keyword\"\"},\"\"path\"\":{\"\"type\"\":\"\"keyword\"\"},\"\"lang\"\":{\"\"type\"\":\"\"keyword\"\"},\"\"chunk_id\"\":{\"\"type\"\":\"\"integer\"\"},\"\"content\"\":{\"\"type\"\":\"\"text\"\"},\"\"lines\"\":{\"\"type\"\":\"\"integer\"\"},\"\"hash\"\":{\"\"type\"\":\"\"keyword\"\"}}}}\")",
+      "Bash(curl -k -u admin:MyS3curePassw0rd!2025 \"https://localhost:9200/code-chunks/_count?pretty\")",
+      "Bash(curl -k -u admin:MyS3curePassw0rd!2025 -X POST \"https://localhost:9200/code-chunks/_refresh\")",
+      "Bash(curl -k -u admin:MyS3curePassw0rd!2025 \"https://localhost:9200/code-chunks/_search?q=content:module&size=1&pretty\")",
+      "Bash(curl -k -u admin:MyS3curePassw0rd!2025 -X POST \"https://localhost:9200/code-chunks/_update_by_query?refresh=true&conflicts=proceed\" -H \"Content-Type: application/json\" -d \"{\"\"script\"\":{\"\"lang\"\":\"\"painless\"\",\"\"source\"\":\"\"ctx._source.doc_id = ctx._source.path + '':'' + (ctx._source.containsKey(''start_line'') ? ctx._source.start_line : 1);\"\"},\"\"query\"\":{\"\"match_all\"\":{}}}\")",
+      "Bash(curl -k -u admin:MyS3curePassw0rd!2025 \"https://localhost:9200/code-chunks/_search?pretty\" -H \"Content-Type: application/json\" -d '{\"\"query\"\":{\"\"match\"\":{\"\"content\"\":\"\"tests\"\"}},\"\"size\"\":5,\"\"_source\"\":[\"\"doc_id\"\",\"\"path\"\",\"\"content\"\"]}')",
+      "Bash(git checkout:*)",
+      "Bash(gh pr merge:*)"
     ],
     "deny": [],
     "ask": []

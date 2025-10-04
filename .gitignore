@@ -7,3 +7,29 @@ yarn-error.log*
 .env
 .env.local
 .stryker-tmp/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Backups
+*.bak
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+nul
+
+# Blueprints (manter só em docs/)
+/blueprint-*.md
+
+# Coverage
+coverage/
+.nyc_output/
+*.lcov
