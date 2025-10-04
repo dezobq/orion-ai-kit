@@ -46,7 +46,7 @@ def bm25_search(query: str, k: int = 50) -> List[str]:
     payload = {
         "query": {"match": {"content": query}},
         "size": k,
-        "_source": ["path", "start_line", "end_line"]
+        "_source": ["doc_id", "path", "start_line", "end_line"]
     }
 
     resp = requests.post(
@@ -59,7 +59,11 @@ def bm25_search(query: str, k: int = 50) -> List[str]:
     resp.raise_for_status()
 
     hits = resp.json().get("hits", {}).get("hits", [])
-    return [f"{h['_source']['path']}:{h['_source']['start_line']}" for h in hits]
+    # Use doc_id if available, otherwise fallback to path:start_line
+    return [
+        h['_source'].get('doc_id', f"{h['_source']['path']}:{h['_source'].get('start_line', 1)}")
+        for h in hits
+    ]
 
 
 def vector_search(query: str, k: int = 50) -> List[str]:
